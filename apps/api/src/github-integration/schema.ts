@@ -15,6 +15,17 @@ export const createGitHubBody = z.object(repositoryRef);
 export const updateGitHubBody = z.object({
   isActive: z.boolean().optional(),
   commentTaskLinkOnGitHubIssue: z.boolean().optional(),
+  aiReviewModel: z
+    .string()
+    .trim()
+    .min(1)
+    .max(200)
+    .nullable()
+    .optional()
+    .openapi({
+      description:
+        "Model ID for AI reviews of the linked repository. Set to null to turn off reviews.",
+    }),
 });
 
 export const repositoryPageQuery = z.object({

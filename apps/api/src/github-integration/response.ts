@@ -32,6 +32,10 @@ export const githubIntegrationSchema = z
       description:
         "When on, Kaneo comments a link back to the task on the linked GitHub issue.",
     }),
+    aiReviewModel: z.string().nullable().optional().openapi({
+      description:
+        "Configured model ID for AI reviews, or null when reviews are off.",
+    }),
     isActive: z.boolean().nullable(),
     createdAt: responseTimestamp,
     updatedAt: responseTimestamp,

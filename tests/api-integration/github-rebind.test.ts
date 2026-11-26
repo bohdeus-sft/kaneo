@@ -85,6 +85,34 @@ async function setup() {
 }
 
 describe("GitHub repository changes preserve link ownership", () => {
+  it("saves and disables AI review for this project through the settings API", async () => {
+    const { project, app, connect } = await setup();
+    const path = `/api/github-integration/project/${project.id}`;
+    const patch = (aiReviewModel: string | null) =>
+      app.request(path, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ aiReviewModel }),
+      });
+    const initial = await app.request(path);
+    expect(initial.status).toBe(200);
+    expect(await initial.json()).toMatchObject({ aiReviewModel: null });
+    expect((await patch("  ")).status).toBe(400);
+    const enabled = await patch("  provider-model  ");
+    expect(enabled.status).toBe(200);
+    expect(await enabled.json()).toMatchObject({
+      aiReviewModel: "provider-model",
+    });
+    await connect();
+    expect(await (await app.request(path)).json()).toMatchObject({
+      aiReviewModel: "provider-model",
+      commentTaskLinkOnGitHubIssue: false,
+    });
+    const disabled = await patch(null);
+    expect(disabled.status).toBe(200);
+    expect(await disabled.json()).toMatchObject({ aiReviewModel: null });
+  });
+
   it("rejects a different numeric repository even when its name is identical", async () => {
     const { integration, config, link, connect } = await setup();
     verify.mockResolvedValue({ ...config, repositoryId: 99 });

@@ -1026,6 +1026,13 @@
 			"reorderError": "Не вдалося змінити порядок колонок"
 		},
 		"githubIntegration": {
+			"aiReview": {
+				"title": "AI-рев’ю",
+				"description": "Перевіряє pull request цього репозиторію за описом прив’язаної задачі Kaneo.",
+				"model": "Назва моделі в API",
+				"save": "Зберегти налаштування AI-рев’ю",
+				"saving": "Збереження…"
+			},
 			"toast": {
 				"verifyError": "Не вдалося перевірити встановлення GitHub",
 				"installAppFirst": "Спочатку встановіть GitHub App на цей репозиторій",

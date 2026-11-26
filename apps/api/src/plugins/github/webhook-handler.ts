@@ -1,3 +1,4 @@
+import { handleReviewEvent } from "./review/pull-request-event";
 import { getGithubApp } from "./utils/github-app";
 import { handleIssueClosed } from "./webhooks/issue-closed";
 import { handleIssueCommentCreated } from "./webhooks/issue-comment-created";
@@ -156,6 +157,7 @@ export function setupWebhookHandlers() {
       await handlePullRequestOpened(
         payload as Parameters<typeof handlePullRequestOpened>[0],
       );
+      await handleReviewEvent(payload, "pull_request");
       console.log("[GitHub Webhook] pull_request.opened handled successfully");
     } catch (error) {
       console.error(
@@ -166,12 +168,22 @@ export function setupWebhookHandlers() {
     }
   });
 
+  githubApp.webhooks.on("pull_request.synchronize", async ({ payload }) => {
+    // A push delivery can arrive before the corresponding PR-opened delivery.
+    await handleReviewEvent(payload, "pull_request", () =>
+      handlePullRequestOpened(
+        payload as Parameters<typeof handlePullRequestOpened>[0],
+      ),
+    );
+  });
+
   githubApp.webhooks.on("pull_request.closed", async ({ payload }) => {
     console.log("[GitHub Webhook] Handling pull_request.closed");
     try {
       await handlePullRequestClosed(
         payload as Parameters<typeof handlePullRequestClosed>[0],
       );
+      await handleReviewEvent(payload, "merge");
       console.log("[GitHub Webhook] pull_request.closed handled successfully");
     } catch (error) {
       console.error(
@@ -188,6 +200,7 @@ export function setupWebhookHandlers() {
       await handlePullRequestOpened(
         payload as Parameters<typeof handlePullRequestOpened>[0],
       );
+      await handleReviewEvent(payload, "pull_request");
       console.log(
         "[GitHub Webhook] pull_request.reopened handled successfully",
       );

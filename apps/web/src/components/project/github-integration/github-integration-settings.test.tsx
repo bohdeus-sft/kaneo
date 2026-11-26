@@ -23,6 +23,7 @@ const m = vi.hoisted(() => ({
   verify: vi.fn(),
   create: vi.fn(),
   remove: vi.fn(),
+  update: vi.fn(),
   integration: { current: null as null | Record<string, unknown> },
 }));
 vi.mock("@/fetchers/github-integration/get-app-info", () => ({
@@ -67,7 +68,7 @@ vi.mock(
   "@/hooks/mutations/github-integration/use-update-github-integration",
   () => ({
     useUpdateGithubIntegration: () => ({
-      mutateAsync: vi.fn(),
+      mutateAsync: m.update,
       isPending: false,
     }),
   }),
@@ -86,11 +87,16 @@ vi.mock("@tanstack/react-router", () => ({
     <a href="/">{children}</a>
   ),
 }));
-const permissions = vi.hoisted(() => ({ create: true, update: true }));
+const permissions = vi.hoisted(() => ({
+  create: true,
+  update: true,
+  manage: true,
+}));
 vi.mock("@/hooks/use-workspace-permission", () => ({
   useWorkspacePermission: () => ({
     canCreateTasks: () => permissions.create,
     canUpdateTasks: () => permissions.update,
+    canManageSettings: () => permissions.manage,
   }),
 }));
 vi.mock("react-i18next", () => ({
@@ -136,6 +142,7 @@ beforeEach(() => {
   m.integration.current = null;
   permissions.create = true;
   permissions.update = true;
+  permissions.manage = true;
   m.link.mockResolvedValue({ error: null });
   m.verify.mockResolvedValue(readyVerification);
 });
@@ -270,6 +277,45 @@ describe("GitHub repository step", () => {
 });
 
 describe("connected GitHub repository", () => {
+  it.each([null, "existing-model"])(
+    "saves the model or turns off AI review for the linked repository",
+    async (savedModel) => {
+      m.appInfo.mockResolvedValue(linkedAccount);
+      m.update.mockResolvedValue({});
+      m.integration.current = {
+        repositoryOwner: "owner",
+        repositoryName: "repo",
+        requiresVerification: false,
+        isActive: true,
+        aiReviewModel: savedModel,
+      };
+      show();
+      const toggle = await screen.findByRole("switch", {
+        name: "settings:githubIntegration.aiReview.title",
+      });
+      fireEvent.click(toggle);
+      if (!savedModel) {
+        fireEvent.change(
+          screen.getByRole("textbox", {
+            name: "settings:githubIntegration.aiReview.model",
+          }),
+          { target: { value: " provider-model " } },
+        );
+      }
+      fireEvent.click(
+        screen.getByRole("button", {
+          name: "settings:githubIntegration.aiReview.save",
+        }),
+      );
+      await waitFor(() =>
+        expect(m.update).toHaveBeenCalledWith({
+          projectId: "project",
+          json: { aiReviewModel: savedModel ? null : "provider-model" },
+        }),
+      );
+    },
+  );
+
   it("asks to reconnect legacy integrations and still permits removal after confirmation", async () => {
     m.appInfo.mockResolvedValue(linkedAccount);
     m.remove.mockResolvedValue(undefined);

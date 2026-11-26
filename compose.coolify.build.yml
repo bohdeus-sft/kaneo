@@ -46,6 +46,10 @@ services:
       - GITHUB_OAUTH_CLIENT_SECRET=${GITHUB_OAUTH_CLIENT_SECRET:-}
       # Optional: SMTP_*, other SSO providers, Sentry, Redis...
       # add them here or in the Coolify UI for the kaneo service.
+      - KANEO_AI_REVIEW_PROVIDER=${KANEO_AI_REVIEW_PROVIDER:-}
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
     depends_on:
       postgres:
         condition: service_healthy

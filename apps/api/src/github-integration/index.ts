@@ -351,6 +351,9 @@ const githubIntegration = apiRouter<BaseVariables & { workspaceId: string }>()
         commentTaskLinkOnGitHubIssue: body.commentTaskLinkOnGitHubIssue,
       };
     }
+    if (body.aiReviewModel !== undefined) {
+      config.aiReviewModel = body.aiReviewModel;
+    }
 
     const validation = await validateGitHubConfig(config);
     if (!validation.valid) {

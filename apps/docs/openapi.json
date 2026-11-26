@@ -3106,6 +3106,13 @@
             "type": "boolean",
             "description": "When on, Kaneo comments a link back to the task on the linked GitHub issue."
           },
+          "aiReviewModel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Configured model ID for AI reviews, or null when reviews are off."
+          },
           "isActive": {
             "type": [
               "boolean",
@@ -3196,6 +3203,13 @@
           "commentTaskLinkOnGitHubIssue": {
             "type": "boolean",
             "description": "When on, Kaneo comments a link back to the task on the linked GitHub issue."
+          },
+          "aiReviewModel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Configured model ID for AI reviews, or null when reviews are off."
           },
           "isActive": {
             "type": [
@@ -19174,6 +19188,15 @@
                   },
                   "commentTaskLinkOnGitHubIssue": {
                     "type": "boolean"
+                  },
+                  "aiReviewModel": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 200,
+                    "description": "Model ID for AI reviews of the linked repository. Set to null to turn off reviews."
                   }
                 }
               }

@@ -2015,6 +2015,13 @@
 			"updateError": "Failed to save custom field."
 		},
 		"githubIntegration": {
+			"aiReview": {
+				"title": "AI review",
+				"description": "Review pull requests from this repository against the linked Kaneo task.",
+				"model": "API model ID",
+				"save": "Save AI review settings",
+				"saving": "Saving…"
+			},
 			"toast": {
 				"verifyError": "Failed to verify GitHub installation",
 				"installAppFirst": "Please install the GitHub App on this repository first",

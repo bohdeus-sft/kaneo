@@ -160,6 +160,17 @@ Name | Description |
 | `GITHUB_PRIVATE_KEY_BASE64` | (Optional) Alternative to `GITHUB_PRIVATE_KEY`: a base64-encoded PEM. Takes precedence when both are set. Convenient when your orchestrator can't carry newlines at all.
 | `GITHUB_APP_NAME` | (Optional) GitHub App slug, used for installation links in the UI.
 
+### GitHub AI reviews
+
+Kaneo can review pull requests linked to tasks when they open or receive new commits. It posts the latest review in the task and adds a separate report after a merge. Subscribe the GitHub App to **Pull requests** and grant read access to **Pull requests** and **Contents**. In Project Settings → Integrations → GitHub, enable **AI review** and enter a model ID that supports structured JSON output. Kaneo sends the task description and relevant changes from that project's connected repository to the configured provider.
+
+| Name | Description |
+| --- | --- |
+| `KANEO_AI_REVIEW_PROVIDER` | `openai` or `gemini`. |
+| `OPENAI_BASE_URL` | Optional base URL for the OpenAI Responses API. For Sub2API, set its domain or use the provider's `base_url` from Codex, for example `https://sub2api.example.com/v1`. Kaneo appends `/responses` to a base path and uses `/v1/responses` for a bare domain. Defaults to `https://api.openai.com/v1`. |
+| `OPENAI_API_KEY` | Required when the provider is `openai`. Use your Sub2API key if `OPENAI_BASE_URL` points to Sub2API. |
+| `GEMINI_API_KEY` | Required when the provider is `gemini`. |
+
 ### Google SSO
 
 Name | Description |

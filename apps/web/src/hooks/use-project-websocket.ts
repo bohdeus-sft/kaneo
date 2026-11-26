@@ -93,8 +93,12 @@ export function useProjectWebSocket(projectId: string) {
         queryClient.invalidateQueries({ queryKey: ["projects"] });
         queryClient.invalidateQueries({ queryKey: ["labels"] });
         queryClient.invalidateQueries({ queryKey: ["columns", projectId] });
-        if (message.linksChanged)
+        if (message.linksChanged) {
           queryClient.invalidateQueries({ queryKey: ["external-links"] });
+          queryClient.invalidateQueries({
+            queryKey: ["github-integration", projectId],
+          });
+        }
         return;
       }
 

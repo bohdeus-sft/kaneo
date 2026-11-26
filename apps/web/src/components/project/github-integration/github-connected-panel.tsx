@@ -1,6 +1,7 @@
 import { UnplugIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { DisconnectIntegrationButton } from "@/components/project/code-hosting/disconnect-integration-button";
+import { GithubAiReviewSection } from "@/components/project/github-integration/github-ai-review-section";
 import { GithubIssuesSection } from "@/components/project/github-integration/github-issues-section";
 import { GithubRepositorySection } from "@/components/project/github-integration/github-repository-section";
 import { GithubWorkflowHint } from "@/components/project/github-integration/github-workflow-hint";
@@ -12,6 +13,7 @@ import { SyncRulesSection } from "@/components/project/sync-rules/sync-rules-sec
 import type { GitHubAppInfo } from "@/fetchers/github-integration/get-app-info";
 import type { GithubIntegration } from "@/fetchers/github-integration/get-github-integration";
 import { useDeleteGithubIntegration } from "@/hooks/mutations/github-integration/use-create-github-integration";
+import { useWorkspacePermission } from "@/hooks/use-workspace-permission";
 import { toast } from "@/lib/toast";
 
 type GithubConnectedPanelProps = {
@@ -26,6 +28,8 @@ export function GithubConnectedPanel({
   appInfo,
 }: GithubConnectedPanelProps) {
   const { t } = useTranslation();
+  const { canManageSettings } = useWorkspacePermission();
+  const reviewModel = integration.aiReviewModel ?? null;
   const repository = {
     owner: integration.repositoryOwner,
     name: integration.repositoryName,
@@ -66,6 +70,14 @@ export function GithubConnectedPanel({
         onReconnect={() => void connect(repository)}
       />
       <GithubIssuesSection projectId={projectId} integration={integration} />
+      {integration.isActive && !integration.requiresVerification && (
+        <GithubAiReviewSection
+          key={JSON.stringify([projectId, integration.id, reviewModel])}
+          projectId={projectId}
+          savedModel={reviewModel}
+          canManage={canManageSettings()}
+        />
+      )}
       <SyncRulesSection
         key={`${projectId}:github`}
         projectId={projectId}

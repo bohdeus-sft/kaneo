@@ -1,3 +1,4 @@
+import { startGitHubReviewWorker } from "./plugins/github/review/worker";
 import { startWebhookWorker } from "./admin/webhooks/start-webhook-worker";
 import integrationSync from "./integration-sync";
 import { syncWorkspaceAccess } from "./ws/workspace-access";
@@ -1083,6 +1084,7 @@ export async function startServer(
 
   injectWebSocket(server);
   const stopWebhookWorker = startWebhookWorker();
+  const stopGitHubReviewWorker = startGitHubReviewWorker();
 
   const gracefulShutdown = async () => {
     if (shuttingDown) return;
@@ -1090,7 +1092,7 @@ export async function startServer(
 
     console.log("🛑 Shutting down gracefully...");
     shutdownScheduler();
-    await stopWebhookWorker();
+    await Promise.all([stopWebhookWorker(), stopGitHubReviewWorker()]);
     await shutdownWebSocketAdapter();
     server.close();
     const [, signInEmailsDrained] = await Promise.all([

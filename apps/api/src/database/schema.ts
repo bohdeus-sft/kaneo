@@ -1317,6 +1317,35 @@ export const externalLinkTable = pgTable(
   ],
 );
 
+export const githubReviewTable = pgTable(
+  "github_review",
+  {
+    id: text("id")
+      .$defaultFn(() => createId())
+      .primaryKey(),
+    linkId: text("link_id")
+      .notNull()
+      .references(() => externalLinkTable.id, { onDelete: "cascade" }),
+    kind: text("kind").$type<"pull_request" | "merge">().notNull(),
+    revision: text("revision").notNull(),
+    attempts: integer("attempts").default(0).notNull(),
+    nextAttemptAt: timestamp("next_attempt_at", { mode: "date" })
+      .default(utcNow)
+      .notNull(),
+    completedAt: timestamp("completed_at", { mode: "date" }),
+  },
+  (table) => [
+    unique("github_review_revision_unique").on(
+      table.linkId,
+      table.kind,
+      table.revision,
+    ),
+    index("github_review_pending_idx")
+      .on(table.nextAttemptAt)
+      .where(sql`${table.completedAt} is null`),
+  ],
+);
+
 export const commentTable = pgTable(
   "comment",
   {

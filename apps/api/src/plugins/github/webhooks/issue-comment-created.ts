@@ -1,3 +1,6 @@
+import type { GitHubConfig } from "../config";
+import { readMergeFailure } from "../review/merge-failure";
+import { saveReviewReport } from "../review/report";
 import { withIntegrationLink } from "../services/with-integration-link";
 import { activityTable } from "../../../database/schema";
 import { findExternalLink } from "../services/link-manager";
@@ -13,6 +16,7 @@ type IssueCommentCreatedPayload = {
     body: string;
     html_url: string;
     user: {
+      id?: number;
       login: string;
       avatar_url: string;
     } | null;
@@ -36,13 +40,19 @@ export async function handleIssueCommentCreated(
   }
 
   const username = comment.user?.login ?? "";
-  if (username.endsWith("[bot]")) {
+  const failureReport = readMergeFailure(comment);
+  if (username.endsWith("[bot]") && !failureReport) {
     return;
   }
 
   const integrations = await findAllIntegrationsByRepo(payload);
 
   for (const integration of integrations) {
+    if (
+      failureReport &&
+      !(JSON.parse(integration.config) as GitHubConfig).aiReviewModel
+    )
+      continue;
     const existingLink = await findExternalLink(
       integration.id,
       "issue",
@@ -56,7 +66,17 @@ export async function handleIssueCommentCreated(
     await withIntegrationLink(
       existingLink,
       integration,
-      async (db, _afterCommit, existingLink) => {
+      async (db, afterCommit, existingLink) => {
+        if (failureReport) {
+          await saveReviewReport(db, afterCommit, {
+            taskId: existingLink.taskId,
+            projectId: integration.projectId,
+            source: "github-merge-failure",
+            url: comment.html_url,
+            content: failureReport,
+          });
+          return;
+        }
         await db
           .insert(activityTable)
           .values({
@@ -78,6 +98,9 @@ export async function handleIssueCommentCreated(
 
         return;
       },
+      failureReport
+        ? { type: "github", config: integration.config }
+        : undefined,
     );
   }
 }
