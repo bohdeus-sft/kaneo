@@ -49,21 +49,17 @@ describe("Telegram logging", () => {
       };
       return value;
     }
-    m.select
-      .mockReturnValueOnce(
-        chain([
-          {
-            title: "Task",
-            number: 1,
-            status: "to-do",
-            priority: "low",
-            projectName: "Project",
-            workspaceId: "workspace",
-            projectId: "project",
-          },
-        ]),
-      )
-      .mockReturnValueOnce(chain([{ name: "User" }]));
+    m.select.mockReturnValueOnce(
+      chain([
+        {
+          title: "Task",
+          status: "to-do",
+          projectName: "Project",
+          workspaceId: "workspace",
+          projectId: "project",
+        },
+      ]),
+    );
     m.send.mockRejectedValue(
       new Error(`Failed https://api.telegram.org/bot${token}`, {
         cause: { token },

@@ -35,7 +35,7 @@ it("delivers creation and transitions into a final column through the Telegram e
   });
   const [task] = await db
     .insert(schema.taskTable)
-    .values({ projectId: project.id, title: "Task", number: 1 })
+    .values({ projectId: project.id, title: "Test & <6>", number: 12 })
     .returning();
   mockAuthenticatedSession(user);
   const { app } = createApp();
@@ -84,7 +84,7 @@ it("delivers creation and transitions into a final column through the Telegram e
   await broadcastTaskCreated({
     ...event,
     description: null,
-    number: 1,
+    number: 12,
     priority: task.priority,
     status: task.status,
   });
@@ -93,12 +93,23 @@ it("delivers creation and transitions into a final column through the Telegram e
   await move("released", "done");
   await move("done", "to-do");
   expect(send).toHaveBeenCalledTimes(2);
-  expect(send.mock.calls[0]?.[1]?.text).toContain("<b>New task created</b>");
-  expect(send.mock.calls[1]?.[1]?.text).toContain("<b>Task completed</b>");
+  expect(send.mock.calls[0]?.[1]?.text).toBe(
+    [
+      "<b>Создана новая задача</b>",
+      "",
+      `<b>Задача:</b> <a href="${process.env.KANEO_CLIENT_URL}/dashboard/workspace/${workspace.id}/project/${project.id}/task/${task.id}">Test &amp; &lt;6&gt;</a>`,
+      `<b>Проект:</b> ${project.name}`,
+      "<b>Статус:</b> К выполнению",
+    ].join("\n"),
+  );
+  expect(send.mock.calls[1]?.[1]?.text).toContain("<b>Задача завершена</b>");
 
   const both = await request("PATCH", { events: { taskStatusChanged: true } });
   expect(both.status).toBe(200);
   await move("to-do", "done");
   expect(send).toHaveBeenCalledTimes(3);
-  expect(send.mock.calls[2]?.[1]?.text).toContain("<b>Task completed</b>");
+  expect(send.mock.calls[2]?.[1]?.text).toContain("<b>Задача завершена</b>");
+  expect(send.mock.calls[2]?.[1]?.text).toContain("<b>Статус:</b> Готово");
+  await move("in-progress", "in-review");
+  expect(send.mock.calls[3]?.[1]?.text).toContain("В работе → На проверке");
 });

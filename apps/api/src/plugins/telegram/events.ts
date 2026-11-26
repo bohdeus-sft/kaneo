@@ -1,11 +1,11 @@
 import { createHash } from "node:crypto";
 import { and, eq, inArray } from "drizzle-orm";
+import ruRU from "../../../../../i18n/ru-RU.json";
 import db from "../../database";
 import {
   columnTable,
   projectTable,
   taskTable,
-  userTable,
   workspaceTable,
 } from "../../database/schema";
 import { safeOutboundError } from "../../utils/outbound-request";
@@ -24,23 +24,32 @@ import { normalizeTelegramConfig, validateTelegramConfig } from "./config";
 
 type TelegramEventData = {
   taskTitle: string;
-  taskNumber: number | null;
   projectName: string;
   taskUrl: string | null;
-  actorName: string | null;
-  status: string | null;
-  priority: string | null;
+  status: string;
 };
 
 function isEnabled(config: TelegramConfig, key: TelegramEventKey): boolean {
   return config.events?.[key] ?? false;
 }
 
-function toSentenceCase(value: string | null): string {
-  if (!value) return "Unknown";
-  return value
-    .replace(/[-_]+/g, " ")
-    .replace(/\b\w/g, (char) => char.toUpperCase());
+const statusLabels: Readonly<Partial<Record<string, string>>> = {
+  ...ruRU.tasks.status,
+  "ready-to-merge": "Готово к слиянию",
+};
+const priorityLabels: Readonly<Partial<Record<string, string>>> =
+  ruRU.tasks.priority;
+
+function formatStatus(status: string): string {
+  if (Object.hasOwn(statusLabels, status))
+    return statusLabels[status] ?? status;
+  return status.replace(/[-_]+/g, " ");
+}
+
+function formatPriority(priority: string): string {
+  if (Object.hasOwn(priorityLabels, priority))
+    return priorityLabels[priority] ?? priority;
+  return priority;
 }
 
 function truncate(value: string, maxLength: number): string {
@@ -55,7 +64,8 @@ function escapeHtml(value: string): string {
   return value
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
 
 function getSafeTelegramTargetIdentifier(config: TelegramConfig): string {
@@ -91,14 +101,11 @@ function getTaskUrl(
 async function getTelegramEventData(
   taskId: string,
   projectId: string,
-  userId: string | null,
 ): Promise<TelegramEventData | null> {
-  const taskPromise = db
+  const [taskRow] = await db
     .select({
       title: taskTable.title,
-      number: taskTable.number,
       status: taskTable.status,
-      priority: taskTable.priority,
       projectName: projectTable.name,
       projectId: projectTable.id,
       workspaceId: workspaceTable.id,
@@ -109,23 +116,12 @@ async function getTelegramEventData(
     .where(and(eq(taskTable.id, taskId), eq(projectTable.id, projectId)))
     .limit(1);
 
-  const userPromise = userId
-    ? db
-        .select({ name: userTable.name })
-        .from(userTable)
-        .where(eq(userTable.id, userId))
-        .limit(1)
-    : Promise.resolve([]);
-
-  const [[taskRow], [user]] = await Promise.all([taskPromise, userPromise]);
-
   if (!taskRow) {
     return null;
   }
 
   return {
     taskTitle: taskRow.title,
-    taskNumber: taskRow.number,
     projectName: taskRow.projectName,
     taskUrl: getTaskUrl(
       process.env.KANEO_CLIENT_URL,
@@ -133,35 +129,27 @@ async function getTelegramEventData(
       taskRow.projectId,
       taskId,
     ),
-    actorName: user?.name ?? null,
     status: taskRow.status,
-    priority: taskRow.priority,
   };
 }
 
 async function sendTelegramMessage(
   config: TelegramConfig,
-  title: string,
-  body: string,
+  message: TelegramMessageContent,
   data: TelegramEventData,
 ): Promise<void> {
-  const issueKey =
-    data.taskNumber !== null ? `#${data.taskNumber}` : "Task update";
-  const taskLabel = `${issueKey} ${data.taskTitle}`;
-  const escapedTaskLabel = escapeHtml(taskLabel);
+  const escapedTaskLabel = escapeHtml(data.taskTitle);
   const taskLine = data.taskUrl
     ? `<a href="${escapeHtml(data.taskUrl)}">${escapedTaskLabel}</a>`
     : escapedTaskLabel;
 
   const lines = [
-    `<b>${escapeHtml(title)}</b>`,
-    escapeHtml(body),
+    `<b>${escapeHtml(message.title)}</b>`,
+    ...(message.body ? [escapeHtml(message.body)] : []),
     "",
-    `<b>Task:</b> ${taskLine}`,
-    `<b>Project:</b> ${escapeHtml(data.projectName)}`,
-    `<b>Status:</b> ${escapeHtml(toSentenceCase(data.status))}`,
-    `<b>Priority:</b> ${escapeHtml(toSentenceCase(data.priority))}`,
-    `<b>Triggered by:</b> ${escapeHtml(data.actorName ?? "Kaneo")}`,
+    `<b>Задача:</b> ${taskLine}`,
+    `<b>Проект:</b> ${escapeHtml(data.projectName)}`,
+    `<b>Статус:</b> ${escapeHtml(formatStatus(message.status ?? data.status))}`,
   ];
 
   try {
@@ -183,7 +171,8 @@ async function sendTelegramMessage(
 
 type TelegramMessageContent = {
   title: string;
-  body: string;
+  body?: string;
+  status?: string;
 };
 
 async function runTelegramHandler(
@@ -191,7 +180,6 @@ async function runTelegramHandler(
   event: {
     taskId: string;
     projectId: string;
-    userId: string | null;
   },
   featureKeys: TelegramEventKey[],
   buildMessage: (
@@ -214,14 +202,10 @@ async function runTelegramHandler(
 
   const message = await buildMessage(config);
   if (!message) return;
-  const data = await getTelegramEventData(
-    event.taskId,
-    event.projectId,
-    event.userId,
-  );
+  const data = await getTelegramEventData(event.taskId, event.projectId);
   if (!data) return;
 
-  await sendTelegramMessage(config, message.title, message.body, data);
+  await sendTelegramMessage(config, message, data);
 }
 
 export async function handleTaskCreated(
@@ -229,8 +213,7 @@ export async function handleTaskCreated(
   context: PluginContext,
 ): Promise<void> {
   await runTelegramHandler(context, event, ["taskCreated"], () => ({
-    title: "New task created",
-    body: `A new task was added: ${event.title}`,
+    title: "Создана новая задача",
   }));
 }
 
@@ -259,15 +242,16 @@ export async function handleTaskStatusChanged(
           !finalColumns.some(({ slug }) => slug === event.oldStatus);
         if (completed) {
           return {
-            title: "Task completed",
-            body: `${event.title} moved to ${toSentenceCase(event.newStatus)}.`,
+            title: "Задача завершена",
+            status: event.newStatus,
           };
         }
       }
       if (!isEnabled(config, "taskStatusChanged")) return null;
       return {
-        title: "Task status changed",
-        body: `${event.title} moved from ${toSentenceCase(event.oldStatus)} to ${toSentenceCase(event.newStatus)}.`,
+        title: "Статус задачи изменён",
+        body: `${formatStatus(event.oldStatus)} → ${formatStatus(event.newStatus)}`,
+        status: event.newStatus,
       };
     },
   );
@@ -278,8 +262,8 @@ export async function handleTaskPriorityChanged(
   context: PluginContext,
 ): Promise<void> {
   await runTelegramHandler(context, event, ["taskPriorityChanged"], () => ({
-    title: "Task priority changed",
-    body: `${event.title} changed from ${toSentenceCase(event.oldPriority)} to ${toSentenceCase(event.newPriority)}.`,
+    title: "Приоритет задачи изменён",
+    body: `${formatPriority(event.oldPriority)} → ${formatPriority(event.newPriority)}`,
   }));
 }
 
@@ -288,8 +272,8 @@ export async function handleTaskTitleChanged(
   context: PluginContext,
 ): Promise<void> {
   await runTelegramHandler(context, event, ["taskTitleChanged"], () => ({
-    title: "Task title changed",
-    body: `Task renamed from ${truncate(event.oldTitle, 120)} to ${truncate(event.newTitle, 120)}.`,
+    title: "Название задачи изменено",
+    body: `${truncate(event.oldTitle, 120)} → ${truncate(event.newTitle, 120)}`,
   }));
 }
 
@@ -298,8 +282,11 @@ export async function handleTaskDescriptionChanged(
   context: PluginContext,
 ): Promise<void> {
   await runTelegramHandler(context, event, ["taskDescriptionChanged"], () => ({
-    title: "Task description changed",
-    body: `The task description was updated${event.newDescription ? `: ${truncate(event.newDescription.replace(/\s+/g, " "), 160)}` : "."}`,
+    title: "Описание задачи изменено",
+    body: truncate(
+      event.newDescription?.replace(/\s+/g, " ").trim() ?? "",
+      160,
+    ),
   }));
 }
 
@@ -308,7 +295,7 @@ export async function handleTaskCommentCreated(
   context: PluginContext,
 ): Promise<void> {
   await runTelegramHandler(context, event, ["taskCommentCreated"], () => ({
-    title: "New task comment",
+    title: "Новый комментарий к задаче",
     body: truncate(event.comment.replace(/\s+/g, " "), 200),
   }));
 }
