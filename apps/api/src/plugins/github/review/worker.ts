@@ -67,8 +67,8 @@ export async function processReview(config: ReviewProvider) {
 
   const heading =
     job.kind === "merge"
-      ? "AI review after merge"
-      : "AI review of pull request";
+      ? "ИИ-проверка после слияния"
+      : "ИИ-проверка pull request";
   let report: string;
   try {
     if (job.attempts > MAX_REVIEW_ATTEMPTS)
@@ -102,9 +102,9 @@ export async function processReview(config: ReviewProvider) {
     if (!(await context.stillCurrent())) return complete();
     report = [
       job.kind === "merge"
-        ? `GitHub merged the PR into **${context.pull.base.ref}**.`
+        ? `GitHub выполнил слияние PR с веткой **${context.pull.base.ref}**.`
         : "",
-      incomplete ? `Review coverage is limited. ${context.scope}` : "",
+      incomplete ? `Проверка охватывает часть изменений. ${context.scope}` : "",
       formatReview(result),
     ]
       .filter(Boolean)
@@ -119,8 +119,8 @@ export async function processReview(config: ReviewProvider) {
     }
     report =
       job.kind === "merge"
-        ? "GitHub confirmed the merge. AI analysis could not be completed. Inspect the merge diff and the affected code paths."
-        : "AI analysis could not be completed. Inspect the PR diff against the task requirements.";
+        ? "GitHub подтвердил слияние. Не удалось завершить ИИ-проверку. Проверьте изменения после слияния и затронутые участки кода."
+        : "Не удалось завершить ИИ-проверку. Сверьте изменения в PR с требованиями задачи.";
   }
 
   const saved = await withIntegrationLink(

@@ -4014,7 +4014,7 @@
             "type": "string"
           },
           "events": {
-            "$ref": "#/components/schemas/IntegrationEvents"
+            "$ref": "#/components/schemas/TelegramIntegrationEvents"
           },
           "isActive": {
             "type": [
@@ -4043,6 +4043,24 @@
           "isActive",
           "createdAt",
           "updatedAt"
+        ]
+      },
+      "TelegramIntegrationEvents": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/IntegrationEvents"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "taskCompleted": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "taskCompleted"
+            ]
+          }
         ]
       },
       "TaskRelation": {
@@ -22396,6 +22414,10 @@
                       },
                       "taskCommentCreated": {
                         "type": "boolean"
+                      },
+                      "taskCompleted": {
+                        "type": "boolean",
+                        "description": "Post when a task moves from an open column into a final column."
                       }
                     }
                   }
@@ -22529,6 +22551,10 @@
                       },
                       "taskCommentCreated": {
                         "type": "boolean"
+                      },
+                      "taskCompleted": {
+                        "type": "boolean",
+                        "description": "Post when a task moves from an open column into a final column."
                       }
                     }
                   }

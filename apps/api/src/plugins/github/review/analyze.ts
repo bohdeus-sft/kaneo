@@ -17,8 +17,10 @@ const output = z.object({
 });
 
 const instructions = `You review repository changes against the linked Kaneo task.
-Use the language of the task description or title. Check requirements, logic, correctness,
-regressions, data integrity, and test coverage. For a merge, focus on interactions with
+Write the summary, requirement assessments, and each finding's problem, impact, and fix in Russian
+regardless of the input language. Preserve file paths, identifiers, and code as written.
+Check requirements, logic, correctness, regressions, data integrity, and test coverage.
+For a merge, focus on interactions with
 the target branch and use the supplied evidence to distinguish a verified finding
 from a missing check. Use file and line references supported by the input.
 Report actionable findings only and give a concrete fix for each finding.
@@ -140,9 +142,9 @@ export async function analyzeReview(
 
 export function formatReview(review: z.infer<typeof output>) {
   const verdicts = {
-    no_findings: "No findings",
-    changes_requested: "Changes needed",
-    insufficient_context: "Insufficient context",
+    no_findings: "Замечаний нет",
+    changes_requested: "Нужны исправления",
+    insufficient_context: "Недостаточно данных",
   };
   return [
     `**${verdicts[review.verdict]}** — ${review.summary}`,
@@ -152,8 +154,8 @@ export function formatReview(review: z.infer<typeof output>) {
       .map((finding) =>
         [
           `**${finding.file}${finding.line === null ? "" : `:${finding.line}`}** — ${finding.problem}`,
-          `Impact: ${finding.impact}`,
-          `Fix: ${finding.fix}`,
+          `Последствия — ${finding.impact}`,
+          `Как исправить — ${finding.fix}`,
         ].join("\n\n"),
       ),
   ]

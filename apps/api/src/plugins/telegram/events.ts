@@ -1,7 +1,8 @@
 import { createHash } from "node:crypto";
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import db from "../../database";
 import {
+  columnTable,
   projectTable,
   taskTable,
   userTable,
@@ -192,14 +193,16 @@ async function runTelegramHandler(
     projectId: string;
     userId: string | null;
   },
-  featureKey: TelegramEventKey,
-  buildMessage: () => TelegramMessageContent,
+  featureKeys: TelegramEventKey[],
+  buildMessage: (
+    config: TelegramConfig,
+  ) => TelegramMessageContent | null | Promise<TelegramMessageContent | null>,
 ): Promise<void> {
   const validation = validateTelegramConfig(context.config);
   if (!validation.valid) {
     console.error("Invalid Telegram plugin config; skipping event dispatch", {
       reason: "Invalid configuration",
-      featureKey,
+      featureKeys,
       projectId: event.projectId,
       taskId: event.taskId,
     });
@@ -207,8 +210,10 @@ async function runTelegramHandler(
   }
 
   const config = normalizeTelegramConfig(context.config as TelegramConfig);
-  if (!isEnabled(config, featureKey)) return;
+  if (!featureKeys.some((key) => isEnabled(config, key))) return;
 
+  const message = await buildMessage(config);
+  if (!message) return;
   const data = await getTelegramEventData(
     event.taskId,
     event.projectId,
@@ -216,15 +221,14 @@ async function runTelegramHandler(
   );
   if (!data) return;
 
-  const { title, body } = buildMessage();
-  await sendTelegramMessage(config, title, body, data);
+  await sendTelegramMessage(config, message.title, message.body, data);
 }
 
 export async function handleTaskCreated(
   event: TaskCreatedEvent,
   context: PluginContext,
 ): Promise<void> {
-  await runTelegramHandler(context, event, "taskCreated", () => ({
+  await runTelegramHandler(context, event, ["taskCreated"], () => ({
     title: "New task created",
     body: `A new task was added: ${event.title}`,
   }));
@@ -234,17 +238,46 @@ export async function handleTaskStatusChanged(
   event: TaskStatusChangedEvent,
   context: PluginContext,
 ): Promise<void> {
-  await runTelegramHandler(context, event, "taskStatusChanged", () => ({
-    title: "Task status changed",
-    body: `${event.title} moved from ${toSentenceCase(event.oldStatus)} to ${toSentenceCase(event.newStatus)}.`,
-  }));
+  await runTelegramHandler(
+    context,
+    event,
+    ["taskStatusChanged", "taskCompleted"],
+    async (config) => {
+      if (isEnabled(config, "taskCompleted")) {
+        const finalColumns = await db
+          .select({ slug: columnTable.slug })
+          .from(columnTable)
+          .where(
+            and(
+              eq(columnTable.projectId, event.projectId),
+              eq(columnTable.isFinal, true),
+              inArray(columnTable.slug, [event.oldStatus, event.newStatus]),
+            ),
+          );
+        const completed =
+          finalColumns.some(({ slug }) => slug === event.newStatus) &&
+          !finalColumns.some(({ slug }) => slug === event.oldStatus);
+        if (completed) {
+          return {
+            title: "Task completed",
+            body: `${event.title} moved to ${toSentenceCase(event.newStatus)}.`,
+          };
+        }
+      }
+      if (!isEnabled(config, "taskStatusChanged")) return null;
+      return {
+        title: "Task status changed",
+        body: `${event.title} moved from ${toSentenceCase(event.oldStatus)} to ${toSentenceCase(event.newStatus)}.`,
+      };
+    },
+  );
 }
 
 export async function handleTaskPriorityChanged(
   event: TaskPriorityChangedEvent,
   context: PluginContext,
 ): Promise<void> {
-  await runTelegramHandler(context, event, "taskPriorityChanged", () => ({
+  await runTelegramHandler(context, event, ["taskPriorityChanged"], () => ({
     title: "Task priority changed",
     body: `${event.title} changed from ${toSentenceCase(event.oldPriority)} to ${toSentenceCase(event.newPriority)}.`,
   }));
@@ -254,7 +287,7 @@ export async function handleTaskTitleChanged(
   event: TaskTitleChangedEvent,
   context: PluginContext,
 ): Promise<void> {
-  await runTelegramHandler(context, event, "taskTitleChanged", () => ({
+  await runTelegramHandler(context, event, ["taskTitleChanged"], () => ({
     title: "Task title changed",
     body: `Task renamed from ${truncate(event.oldTitle, 120)} to ${truncate(event.newTitle, 120)}.`,
   }));
@@ -264,7 +297,7 @@ export async function handleTaskDescriptionChanged(
   event: TaskDescriptionChangedEvent,
   context: PluginContext,
 ): Promise<void> {
-  await runTelegramHandler(context, event, "taskDescriptionChanged", () => ({
+  await runTelegramHandler(context, event, ["taskDescriptionChanged"], () => ({
     title: "Task description changed",
     body: `The task description was updated${event.newDescription ? `: ${truncate(event.newDescription.replace(/\s+/g, " "), 160)}` : "."}`,
   }));
@@ -274,7 +307,7 @@ export async function handleTaskCommentCreated(
   event: TaskCommentCreatedEvent,
   context: PluginContext,
 ): Promise<void> {
-  await runTelegramHandler(context, event, "taskCommentCreated", () => ({
+  await runTelegramHandler(context, event, ["taskCommentCreated"], () => ({
     title: "New task comment",
     body: truncate(event.comment.replace(/\s+/g, " "), 200),
   }));

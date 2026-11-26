@@ -1406,6 +1406,7 @@
 			"reminderLeadTimeBefore": "अनुस्मारक भेजें"
 		},
 		"telegramIntegration": {
+			"taskCompleted": "कोई कार्य पूरा होता है",
 			"validation": {
 				"botTokenInvalid": "वैध Telegram बॉट टोकन दर्ज करें",
 				"chatIdRequired": "चैट ID आवश्यक है",

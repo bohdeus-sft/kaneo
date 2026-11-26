@@ -8833,6 +8833,9 @@
 					"type": "object",
 					"additionalProperties": false,
 					"properties": {
+						"taskCompleted": {
+							"type": "string"
+						},
 						"validation": {
 							"type": "object",
 							"additionalProperties": false,
@@ -8989,6 +8992,7 @@
 						}
 					},
 					"required": [
+						"taskCompleted",
 						"validation",
 						"toast",
 						"connectionTitle",

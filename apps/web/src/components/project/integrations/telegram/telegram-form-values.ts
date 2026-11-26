@@ -1,6 +1,6 @@
 import { z } from "zod/v4";
 import {
-  type ChatEvents,
+  CHAT_EVENT_ITEMS,
   toChatEvents,
 } from "@/components/project/integrations/chat-webhook/chat-events";
 import type { TelegramIntegration } from "@/fetchers/telegram-integration/get-telegram-integration";
@@ -10,8 +10,16 @@ export type TelegramFormValues = {
   chatId: string;
   threadId: string;
   chatLabel: string;
-  events: ChatEvents;
+  events: ReturnType<typeof toChatEvents> & { taskCompleted: boolean };
 };
+
+export const TELEGRAM_EVENT_ITEMS = [
+  ...CHAT_EVENT_ITEMS,
+  {
+    id: "taskCompleted",
+    labelKey: "settings:telegramIntegration.taskCompleted",
+  } as const,
+];
 
 export const telegramFormSchema = z.object({
   botToken: z.string(),
@@ -20,6 +28,7 @@ export const telegramFormSchema = z.object({
   chatLabel: z.string(),
   events: z.object({
     taskCreated: z.boolean(),
+    taskCompleted: z.boolean(),
     taskStatusChanged: z.boolean(),
     taskPriorityChanged: z.boolean(),
     taskTitleChanged: z.boolean(),
@@ -36,6 +45,9 @@ export function toTelegramFormValues(
     chatId: integration?.chatId ?? "",
     threadId: integration?.threadId ? String(integration.threadId) : "",
     chatLabel: integration?.chatLabel ?? "",
-    events: toChatEvents(integration?.events),
+    events: {
+      ...toChatEvents(integration?.events),
+      taskCompleted: integration?.events?.taskCompleted ?? false,
+    },
   };
 }

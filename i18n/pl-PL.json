@@ -1887,6 +1887,7 @@
 			"importDescription": "Dodaj zadania z wcześniej wyeksportowanego pliku."
 		},
 		"telegramIntegration": {
+			"taskCompleted": "Zadanie zostaje ukończone",
 			"botTokenHint": "Utwórz bota za pomocą BotFather i wklej tutaj jego token.",
 			"botTokenHintConfigured": "Bieżący token: {{token}}",
 			"botTokenLabel": "Token bota",

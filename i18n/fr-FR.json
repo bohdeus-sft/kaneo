@@ -1169,6 +1169,7 @@
 			"reminderLeadTimeBefore": "Envoyer les rappels"
 		},
 		"telegramIntegration": {
+			"taskCompleted": "Une tâche est terminée",
 			"validation": {
 				"botTokenInvalid": "Entrez un jeton de bot Telegram valide",
 				"chatIdRequired": "L'identifiant du chat est requis",

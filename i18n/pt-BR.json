@@ -1415,6 +1415,7 @@
 			"reminderLeadTimeBefore": "Enviar lembretes"
 		},
 		"telegramIntegration": {
+			"taskCompleted": "Uma tarefa é concluída",
 			"validation": {
 				"botTokenInvalid": "Digite um token de bot do Telegram válido",
 				"chatIdRequired": "O ID do chat é obrigatório",

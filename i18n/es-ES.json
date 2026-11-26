@@ -1488,6 +1488,7 @@
 			"webhookEvents": "Activa los eventos de push, pull request, issues, comentarios de issues y create."
 		},
 		"telegramIntegration": {
+			"taskCompleted": "Se completa una tarea",
 			"validation": {
 				"botTokenInvalid": "Introduce un token de bot de Telegram válido",
 				"chatIdRequired": "El ID del chat es obligatorio",

@@ -1397,6 +1397,7 @@
 			"reminderLeadTimeBefore": "タスクの期限の"
 		},
 		"telegramIntegration": {
+			"taskCompleted": "タスクが完了したとき",
 			"validation": {
 				"botTokenInvalid": "有効な Telegram ボットトークンを入力してください",
 				"chatIdRequired": "チャット ID は必須です",

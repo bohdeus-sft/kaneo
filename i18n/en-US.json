@@ -2234,6 +2234,7 @@
 			"disconnectDescription": "Kaneo stops sending events and removes the saved endpoint and secret."
 		},
 		"telegramIntegration": {
+			"taskCompleted": "A task is completed",
 			"validation": {
 				"botTokenInvalid": "Enter a valid Telegram bot token",
 				"chatIdRequired": "Chat ID is required",

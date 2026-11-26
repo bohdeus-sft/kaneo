@@ -17,7 +17,9 @@ export const telegramIntegrationSchema = z
     }),
     botTokenConfigured: z.boolean(),
     maskedBotToken: z.string(),
-    events: integrationEventsSchema,
+    events: integrationEventsSchema
+      .extend({ taskCompleted: z.boolean() })
+      .openapi("TelegramIntegrationEvents"),
     isActive: z.boolean().nullable(),
     createdAt: responseTimestamp,
     updatedAt: responseTimestamp,

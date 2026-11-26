@@ -1161,6 +1161,7 @@
 			"reminderLeadTimeBefore": "Αποστολή υπενθυμίσεων"
 		},
 		"telegramIntegration": {
+			"taskCompleted": "Ολοκληρώνεται μια εργασία",
 			"validation": {
 				"botTokenInvalid": "Εισαγάγετε έγκυρο token bot Telegram",
 				"chatIdRequired": "Το αναγνωριστικό συνομιλίας είναι υποχρεωτικό",

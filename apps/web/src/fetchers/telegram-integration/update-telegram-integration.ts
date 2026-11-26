@@ -10,6 +10,7 @@ export type UpdateTelegramIntegrationRequest = {
   isActive?: boolean;
   events?: {
     taskCreated?: boolean;
+    taskCompleted?: boolean;
     taskStatusChanged?: boolean;
     taskPriorityChanged?: boolean;
     taskTitleChanged?: boolean;

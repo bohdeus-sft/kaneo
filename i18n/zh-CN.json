@@ -1415,6 +1415,7 @@
 			"reminderLeadTimeBefore": "在任务截止前"
 		},
 		"telegramIntegration": {
+			"taskCompleted": "任务已完成",
 			"validation": {
 				"botTokenInvalid": "请输入有效的 Telegram Bot 令牌",
 				"chatIdRequired": "聊天 ID 不能为空",

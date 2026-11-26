@@ -12,15 +12,15 @@ describe("GitHub review reports", () => {
   it("extracts structured findings from either provider", async () => {
     const report = {
       verdict: "changes_requested",
-      summary: "Needs a fix",
+      summary: "Требуется исправление",
       requirements: [],
       findings: [
         {
           file: "app.ts",
           line: 7,
-          problem: "Bad value",
-          impact: "Wrong output",
-          fix: "Validate it",
+          problem: "Некорректное значение",
+          impact: "Неверный результат",
+          fix: "Проверить входное значение",
         },
       ],
     };
@@ -64,12 +64,17 @@ describe("GitHub review reports", () => {
       );
       expect(result).toEqual(report);
       expect(formatReview(result)).toContain("**app.ts:7**");
-      expect(formatReview(result)).toContain("Validate it");
+      expect(formatReview(result)).toContain("**Нужны исправления**");
+      expect(formatReview(result)).toContain(
+        "Как исправить — Проверить входное значение",
+      );
       expect(fetch).toHaveBeenCalledTimes(1);
       expect(fetch).toHaveBeenCalledWith(
         url,
         expect.objectContaining({ redirect: "error" }),
       );
+      const requestBody: unknown = fetch.mock.calls[0]?.[1]?.body;
+      expect(requestBody).toEqual(expect.stringContaining("in Russian"));
     }
   });
 

@@ -1397,6 +1397,7 @@
 			"reminderLeadTimeBefore": "Gửi nhắc nhở"
 		},
 		"telegramIntegration": {
+			"taskCompleted": "Một công việc được hoàn thành",
 			"validation": {
 				"botTokenInvalid": "Nhập một token bot Telegram hợp lệ",
 				"chatIdRequired": "Cần có Chat ID",

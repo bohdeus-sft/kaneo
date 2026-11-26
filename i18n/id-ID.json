@@ -1153,6 +1153,7 @@
 			"reminderLeadTimeBefore": "Kirim pengingat"
 		},
 		"telegramIntegration": {
+			"taskCompleted": "Tugas diselesaikan",
 			"validation": {
 				"botTokenInvalid": "Masukkan token bot Telegram yang valid",
 				"chatIdRequired": "Chat ID wajib diisi",

@@ -78,7 +78,7 @@ export async function readReviewContext(
           throw new Error("PR base changed during review");
         return true;
       },
-      scope: "Full proposed PR diff against its GitHub base.",
+      scope: "Предлагаемые изменения PR относительно целевой ветки на GitHub.",
     };
   }
 
@@ -136,7 +136,7 @@ export async function readReviewContext(
     incomplete: files.length >= 300 || possiblyRebased,
     stillCurrent: async () => true,
     scope: possiblyRebased
-      ? "Delta from the final commit's first parent. A rebase may have applied earlier commits separately, so this evidence cannot establish the entire merge result."
-      : "Actual changes from the merge commit's first parent to the merge result.",
+      ? "Проверены изменения относительно первого родителя последнего коммита. При rebase предыдущие коммиты могли быть применены отдельно."
+      : "Проверены фактические изменения между первым родителем коммита слияния и результатом слияния.",
   };
 }

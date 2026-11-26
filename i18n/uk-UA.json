@@ -1184,6 +1184,7 @@
 			"reminderLeadTimeBefore": "Надсилати нагадування за"
 		},
 		"telegramIntegration": {
+			"taskCompleted": "Задачу завершено",
 			"validation": {
 				"botTokenInvalid": "Введіть дійсний токен бота Telegram",
 				"chatIdRequired": "ID чату є обов'язковим",

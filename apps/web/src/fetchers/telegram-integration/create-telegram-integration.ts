@@ -9,6 +9,7 @@ export type CreateTelegramIntegrationRequest = {
   chatLabel?: string;
   events?: {
     taskCreated?: boolean;
+    taskCompleted?: boolean;
     taskStatusChanged?: boolean;
     taskPriorityChanged?: boolean;
     taskTitleChanged?: boolean;

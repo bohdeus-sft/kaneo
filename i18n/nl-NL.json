@@ -1479,6 +1479,7 @@
 			"webhookEvents": "Schakel de gebeurtenissen push, pull request, issue, issue-reactie en create in."
 		},
 		"telegramIntegration": {
+			"taskCompleted": "Een taak wordt voltooid",
 			"validation": {
 				"botTokenInvalid": "Voer een geldig Telegram-bottoken in",
 				"chatIdRequired": "Chat-ID is verplicht",

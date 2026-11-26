@@ -1161,6 +1161,7 @@
 			"reminderLeadTimeBefore": "Hatırlatmaları talebin bitiş tarihinden"
 		},
 		"telegramIntegration": {
+			"taskCompleted": "Bir görev tamamlandığında",
 			"validation": {
 				"botTokenInvalid": "Geçerli bir Telegram bot belirteci girin",
 				"chatIdRequired": "Sohbet kimliği gereklidir",

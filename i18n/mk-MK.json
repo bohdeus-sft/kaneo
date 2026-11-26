@@ -1161,6 +1161,7 @@
 			"reminderLeadTimeBefore": "Испраќај потсетници"
 		},
 		"telegramIntegration": {
+			"taskCompleted": "Задачата е завршена",
 			"validation": {
 				"botTokenInvalid": "Внеси валиден Telegram bot token",
 				"chatIdRequired": "Chat ID е задолжително",

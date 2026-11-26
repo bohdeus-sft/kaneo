@@ -1324,6 +1324,7 @@
 			"reminderLeadTimeBefore": "Erinnerungen"
 		},
 		"telegramIntegration": {
+			"taskCompleted": "Eine Aufgabe wird abgeschlossen",
 			"validation": {
 				"botTokenInvalid": "Gib einen gültigen Telegram-Bot-Token ein",
 				"chatIdRequired": "Chat-ID ist erforderlich",

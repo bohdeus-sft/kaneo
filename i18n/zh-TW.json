@@ -1414,6 +1414,7 @@
 			"reminderLeadTimeBefore": "在任務截止前"
 		},
 		"telegramIntegration": {
+			"taskCompleted": "任務已完成",
 			"validation": {
 				"botTokenInvalid": "請輸入有效的 Telegram 機器人 Token",
 				"chatIdRequired": "必須提供聊天 ID",

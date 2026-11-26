@@ -80,6 +80,7 @@ Once connected you can enable or disable the integration with the toggle, update
 | Event | Default | Description |
 | --- | --- | --- |
 | Task created | On | A new task is created in the project |
+| Task completed | Off | A task moves from an open column into a column marked final |
 | Task status changed | On | A task moves to a different status column |
 | Task priority changed | Off | A task's priority is changed |
 | Task title changed | Off | A task's title is edited |
@@ -87,6 +88,8 @@ Once connected you can enable or disable the integration with the toggle, update
 | Task comment created | On | A new comment is added to a task |
 
 You can change these toggles at any time in the integration settings.
+
+To post only creation and completion updates, select **A task is created** and **A task is completed**, then clear the other events. If both completion and status changes are selected, moving a task to a final column sends one completion message.
 
 ## Message format
 

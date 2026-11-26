@@ -1424,6 +1424,7 @@
 			"reminderLeadTimeBefore": "Xatırlatmaları tapşırığın son tarixindən"
 		},
 		"telegramIntegration": {
+			"taskCompleted": "Tapşırıq tamamlandıqda",
 			"validation": {
 				"botTokenInvalid": "Etibarlı Telegram bot giriş nişanı daxil edin",
 				"chatIdRequired": "Söhbət identifikatoru tələb olunur",

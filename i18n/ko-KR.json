@@ -1153,6 +1153,7 @@
 			"reminderLeadTimeBefore": "작업 마감"
 		},
 		"telegramIntegration": {
+			"taskCompleted": "작업이 완료될 때",
 			"validation": {
 				"botTokenInvalid": "유효한 Telegram 봇 토큰을 입력하세요",
 				"chatIdRequired": "채팅 ID는 필수입니다",

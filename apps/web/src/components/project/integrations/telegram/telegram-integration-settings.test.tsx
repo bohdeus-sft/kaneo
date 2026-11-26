@@ -106,7 +106,7 @@ describe("TelegramIntegrationSettings", () => {
     expect(mocks.createIntegration).not.toHaveBeenCalled();
   });
 
-  it("keeps the saved bot token when the field is left empty", async () => {
+  it("saves creation and completion notifications with the stored bot token", async () => {
     mocks.query.data = {
       id: "integration-1",
       projectId: "project-1",
@@ -128,6 +128,18 @@ describe("TelegramIntegrationSettings", () => {
       "placeholder",
       "settings:telegramIntegration.botTokenSavedPlaceholder",
     );
+    const completion = screen.getByRole("checkbox", {
+      name: "settings:telegramIntegration.taskCompleted",
+    });
+    expect(completion).not.toBeChecked();
+    fireEvent.click(completion);
+    for (const event of ["taskStatusChanged", "taskCommentCreated"]) {
+      fireEvent.click(
+        screen.getByRole("checkbox", {
+          name: `settings:chatIntegrations.events.${event}`,
+        }),
+      );
+    }
     fireEvent.click(
       screen.getByRole("button", {
         name: "settings:chatIntegrations.saveChanges",
@@ -142,7 +154,12 @@ describe("TelegramIntegrationSettings", () => {
           chatId: "-1001234567890",
           threadId: 7,
           chatLabel: "Engineering",
-          events: toChatEvents(),
+          events: {
+            ...toChatEvents(),
+            taskCompleted: true,
+            taskStatusChanged: false,
+            taskCommentCreated: false,
+          },
         },
       }),
     );
