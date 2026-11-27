@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { cleanup, render, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { afterEach, describe, expect, it, vi } from "vite-plus/test";
@@ -60,15 +61,17 @@ afterEach(cleanup);
 
 function renderLayout() {
   render(
-    <ProjectLayout
-      projectId="project-1"
-      workspaceId="workspace-1"
-      activeView="board"
-      toolbar={<button type="button">Toolbar action</button>}
-      summary={<span>5 tasks</span>}
-    >
-      <p>Board content</p>
-    </ProjectLayout>,
+    <QueryClientProvider client={new QueryClient()}>
+      <ProjectLayout
+        projectId="project-1"
+        workspaceId="workspace-1"
+        activeView="board"
+        toolbar={<button type="button">Toolbar action</button>}
+        summary={<span>5 tasks</span>}
+      >
+        <p>Board content</p>
+      </ProjectLayout>
+    </QueryClientProvider>,
   );
 }
 

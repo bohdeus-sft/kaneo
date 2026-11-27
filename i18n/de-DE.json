@@ -2,6 +2,8 @@
 	"common": {
 		"appName": "Kaneo",
 		"actions": {
+			"refreshData": "Daten aktualisieren",
+			"refreshDataError": "Die Daten konnten nicht aktualisiert werden.",
 			"cancel": "Abbrechen",
 			"close": "Schließen",
 			"clearAll": "Alle löschen",
@@ -1173,6 +1175,8 @@
 			"reorderError": "Spalten konnten nicht neu angeordnet werden"
 		},
 		"githubIntegration": {
+			"createIssueOnInProgressTitle": "Issues bei Arbeitsbeginn erstellen",
+			"createIssueOnInProgressHint": "Erstellt ein GitHub-Issue, wenn eine Aufgabe manuell von To Do nach In Progress verschoben wird.",
 			"toast": {
 				"verifyError": "GitHub-Installation konnte nicht überprüft werden",
 				"installAppFirst": "Bitte installiere zuerst die GitHub-App für dieses Repository",

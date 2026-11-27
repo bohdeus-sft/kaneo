@@ -2,6 +2,8 @@
 	"common": {
 		"appName": "Kaneo",
 		"actions": {
+			"refreshData": "Ανανέωση δεδομένων",
+			"refreshDataError": "Δεν ήταν δυνατή η ανανέωση των δεδομένων.",
 			"cancel": "Ακύρωση",
 			"close": "Κλείσιμο",
 			"clearAll": "Εκκαθάριση όλων",
@@ -1010,6 +1012,8 @@
 			"reorderError": "Αποτυχία αναδιάταξης στηλών"
 		},
 		"githubIntegration": {
+			"createIssueOnInProgressTitle": "Δημιουργία issues όταν ξεκινά η εργασία",
+			"createIssueOnInProgressHint": "Δημιουργεί issue στο GitHub όταν μια εργασία μετακινείται χειροκίνητα από To Do σε In Progress.",
 			"toast": {
 				"verifyError": "Αποτυχία επαλήθευσης εγκατάστασης GitHub",
 				"installAppFirst": "Παρακαλώ εγκαταστήστε πρώτα την εφαρμογή GitHub σε αυτό το αποθετήριο",

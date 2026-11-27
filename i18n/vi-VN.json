@@ -2,6 +2,8 @@
 	"common": {
 		"appName": "Kaneo",
 		"actions": {
+			"refreshData": "Làm mới dữ liệu",
+			"refreshDataError": "Không thể làm mới dữ liệu.",
 			"cancel": "Hủy",
 			"close": "Đóng",
 			"clearAll": "Xóa tất cả",
@@ -1246,6 +1248,8 @@
 			"reorderError": "Không thể sắp xếp lại các cột"
 		},
 		"githubIntegration": {
+			"createIssueOnInProgressTitle": "Tạo issue khi bắt đầu công việc",
+			"createIssueOnInProgressHint": "Tạo issue GitHub khi bạn chuyển thủ công một nhiệm vụ từ To Do sang In Progress.",
 			"toast": {
 				"verifyError": "Không thể xác minh cài đặt GitHub",
 				"installAppFirst": "Vui lòng cài đặt ứng dụng GitHub trên kho lưu trữ này trước",

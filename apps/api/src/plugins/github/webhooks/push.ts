@@ -121,7 +121,11 @@ export async function handlePush(payload: PushPayload) {
         const current = await database.query.taskTable.findFirst({
           where: linkedTaskScope(taskId, integration.projectId),
         });
-        if (!current) return;
+        if (
+          !current ||
+          (config.createIssueOnInProgress && current.status === "to-do")
+        )
+          return;
         const task = current;
         const branchLink = await createOrUpdateExternalLink(
           {
@@ -156,7 +160,8 @@ export async function handlePush(payload: PushPayload) {
         );
 
         const canMove =
-          branchLink.created || !(await isTaskInFinalState(task, database));
+          !config.createIssueOnInProgress &&
+          (branchLink.created || !(await isTaskInFinalState(task, database)));
 
         if (task.status !== targetStatus && canMove) {
           console.log(

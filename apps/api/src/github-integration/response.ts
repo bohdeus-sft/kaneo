@@ -32,6 +32,10 @@ export const githubIntegrationSchema = z
       description:
         "When on, Kaneo comments a link back to the task on the linked GitHub issue.",
     }),
+    createIssueOnInProgress: z.boolean().optional().openapi({
+      description:
+        "Create GitHub issues on a manual move from To Do to In Progress.",
+    }),
     aiReviewModel: z.string().nullable().optional().openapi({
       description:
         "Configured model ID for AI reviews, or null when reviews are off.",

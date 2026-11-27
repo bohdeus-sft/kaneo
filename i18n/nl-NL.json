@@ -2,6 +2,8 @@
 	"common": {
 		"appName": "Kaneo",
 		"actions": {
+			"refreshData": "Gegevens vernieuwen",
+			"refreshDataError": "De gegevens konden niet worden vernieuwd.",
 			"cancel": "Annuleren",
 			"close": "Sluiten",
 			"clearAll": "Alles wissen",
@@ -888,6 +890,8 @@
 			"reorderError": "Herschikken van kolommen mislukt"
 		},
 		"githubIntegration": {
+			"createIssueOnInProgressTitle": "Maak issues aan bij de start van het werk",
+			"createIssueOnInProgressHint": "Maak een GitHub-issue aan wanneer je een taak handmatig van To Do naar In Progress verplaatst.",
 			"toast": {
 				"verifyError": "Verifiëren van GitHub-installatie mislukt",
 				"installAppFirst": "Installeer eerst de GitHub App op deze repository",

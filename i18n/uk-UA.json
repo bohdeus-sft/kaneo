@@ -2,6 +2,8 @@
 	"common": {
 		"appName": "Kaneo",
 		"actions": {
+			"refreshData": "Оновити дані",
+			"refreshDataError": "Не вдалося оновити дані.",
 			"cancel": "Скасувати",
 			"close": "Закрити",
 			"clearAll": "Очистити все",
@@ -1026,6 +1028,8 @@
 			"reorderError": "Не вдалося змінити порядок колонок"
 		},
 		"githubIntegration": {
+			"createIssueOnInProgressTitle": "Створювати GitHub Issues на початку роботи",
+			"createIssueOnInProgressHint": "Створює GitHub Issue, коли ти вручну переносиш задачу з To Do в In Progress.",
 			"aiReview": {
 				"title": "AI-рев’ю",
 				"description": "Перевіряє pull request цього репозиторію за описом прив’язаної задачі Kaneo.",

@@ -2,6 +2,8 @@
 	"common": {
 		"appName": "Kaneo",
 		"actions": {
+			"refreshData": "डेटा रीफ़्रेश करें",
+			"refreshDataError": "डेटा रीफ़्रेश नहीं हो सका।",
 			"cancel": "रद्द करें",
 			"close": "बंद करें",
 			"clearAll": "सभी साफ़ करें",
@@ -1255,6 +1257,8 @@
 			"reorderError": "कॉलम का क्रम बदलने में विफल"
 		},
 		"githubIntegration": {
+			"createIssueOnInProgressTitle": "काम शुरू होने पर इश्यू बनाएँ",
+			"createIssueOnInProgressHint": "किसी कार्य को मैन्युअल रूप से To Do से In Progress में ले जाने पर GitHub इश्यू बनाएँ।",
 			"toast": {
 				"verifyError": "GitHub इंस्टॉलेशन सत्यापित करने में विफल",
 				"installAppFirst": "कृपया पहले इस रिपॉज़िटरी पर GitHub App इंस्टॉल करें",

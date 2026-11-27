@@ -25,7 +25,12 @@ import { gitlabPlugin } from "../../apps/api/src/plugins/gitlab";
 import { handleGitlabIssueOpened } from "../../apps/api/src/plugins/gitlab/webhooks/issue-opened";
 import { handleGitlabIssueClosed } from "../../apps/api/src/plugins/gitlab/webhooks/issue-closed";
 import { handleGitlabIssueReopened } from "../../apps/api/src/plugins/gitlab/webhooks/issue-reopened";
-import { registerPlugin } from "../../apps/api/src/plugins/registry";
+import {
+  initializeEventSubscriptions,
+  registerPlugin,
+} from "../../apps/api/src/plugins/registry";
+import { handlePush } from "../../apps/api/src/plugins/github/webhooks/push";
+import reorderTasks from "../../apps/api/src/task/controllers/reorder-tasks";
 import {
   reconcileProjectSync,
   reconcileTaskSync,
@@ -225,6 +230,97 @@ async function setup(type: "github" | "gitea" | "gitlab") {
     config,
   };
 }
+
+it("waits for a manual board move before creating a GitHub issue", async () => {
+  const f = await setup("github");
+  await f.assign();
+  await db
+    .update(schema.integrationTable)
+    .set({
+      config: JSON.stringify({
+        ...f.config,
+        commentTaskLinkOnGitHubIssue: true,
+        createIssueOnInProgress: true,
+      }),
+    })
+    .where(eq(schema.integrationTable.id, f.integration.id));
+  const member = await db.query.workspaceUserTable.findFirst({
+    where: eq(schema.workspaceUserTable.workspaceId, f.workspace.id),
+  });
+  if (!member) throw new Error("Missing workspace member");
+  const task = {
+    ...f.task,
+    taskId: f.task.id,
+    userId: member.userId,
+    number: 1,
+  };
+  initializeEventSubscriptions();
+  await events.publishEvent("task.created", task, { waitForHandlers: true });
+  await reconcileProjectSync(f.project.id);
+  const push = () =>
+    handlePush({
+      ref: `refs/heads/${f.project.slug}-1`,
+      installation: { id: 2 },
+      repository: {
+        id: 1,
+        owner: { login: "team" },
+        name: "repo",
+        html_url: "https://github.com/team/repo",
+      },
+    });
+  await push();
+  expect(await db.query.taskTable.findFirst()).toMatchObject({
+    status: "to-do",
+  });
+  expect(await db.query.externalLinkTable.findMany()).toHaveLength(0);
+  await events.publishEvent(
+    "task.status_changed",
+    {
+      ...task,
+      userId: null,
+      oldStatus: "to-do",
+      newStatus: "in-progress",
+    },
+    { waitForHandlers: true },
+  );
+  expect(mocks.githubCreate).not.toHaveBeenCalled();
+
+  await db
+    .update(schema.taskTable)
+    .set({ description: "Updated before starting" })
+    .where(eq(schema.taskTable.id, f.task.id));
+  await reorderTasks(
+    f.project.id,
+    [{ id: f.task.id, status: "in-progress", position: 0 }],
+    member.userId,
+  );
+  await vi.waitFor(() => expect(mocks.comment).toHaveBeenCalledOnce());
+  expect(mocks.githubCreate).toHaveBeenCalledExactlyOnceWith(
+    expect.objectContaining({
+      body: expect.stringContaining("Updated before starting"),
+    }),
+  );
+  await push();
+  expect(await db.query.taskTable.findFirst()).toMatchObject({
+    status: "in-progress",
+  });
+  expect(await db.query.externalLinkTable.findMany()).toMatchObject(
+    expect.arrayContaining([
+      expect.objectContaining({ resourceType: "issue", externalId: "12" }),
+      expect.objectContaining({ resourceType: "branch" }),
+    ]),
+  );
+  await events.publishEvent(
+    "task.status_changed",
+    {
+      ...task,
+      oldStatus: "to-do",
+      newStatus: "in-progress",
+    },
+    { waitForHandlers: true },
+  );
+  expect(mocks.githubCreate).toHaveBeenCalledOnce();
+});
 
 describe.each(["github", "gitea", "gitlab"] as const)(
   "%s label-filtered sync",

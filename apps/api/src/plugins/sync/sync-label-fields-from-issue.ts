@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 import db from "../../database";
 import { externalLinkTable, taskTable } from "../../database/schema";
 import { publishEvent } from "../../events";
+import type { GitHubConfig } from "../github/config";
 import { linkedTaskScope } from "../github/services/integration-task-scope";
 import { updateExternalLink } from "../github/services/link-manager";
 import { updateTaskStatus } from "../github/services/task-service";
@@ -102,7 +103,12 @@ async function applyLabelFields(
         );
       }
 
-      if (status) {
+      const waitForManualStart =
+        task.status === "to-do" &&
+        integration.type === "github" &&
+        (JSON.parse(integration.config) as GitHubConfig)
+          .createIssueOnInProgress;
+      if (status && !waitForManualStart) {
         const result = await updateTaskStatus(link.taskId, status, tx);
         if (result.applied && result.before.status !== result.after.status)
           afterCommit(() =>

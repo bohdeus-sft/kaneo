@@ -2,6 +2,8 @@
 	"common": {
 		"appName": "Kaneo",
 		"actions": {
+			"refreshData": "Refresh data",
+			"refreshDataError": "Couldn't refresh the data.",
 			"cancel": "Cancel",
 			"close": "Close",
 			"clearAll": "Clear all",
@@ -2015,6 +2017,8 @@
 			"updateError": "Failed to save custom field."
 		},
 		"githubIntegration": {
+			"createIssueOnInProgressTitle": "Create issues when work starts",
+			"createIssueOnInProgressHint": "Create a GitHub issue when you manually move a task from To Do to In Progress.",
 			"aiReview": {
 				"title": "AI review",
 				"description": "Review pull requests from this repository against the linked Kaneo task.",

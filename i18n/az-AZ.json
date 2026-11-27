@@ -2,6 +2,8 @@
 	"common": {
 		"appName": "Kaneo",
 		"actions": {
+			"refreshData": "Məlumatları yenilə",
+			"refreshDataError": "Məlumatları yeniləmək mümkün olmadı.",
 			"cancel": "Ləğv et",
 			"close": "Bağla",
 			"clearAll": "Hamısını təmizlə",
@@ -1255,6 +1257,8 @@
 			"reorderError": "Sütunların sırasını dəyişmək alınmadı"
 		},
 		"githubIntegration": {
+			"createIssueOnInProgressTitle": "İş başlayanda GitHub issue yaradın",
+			"createIssueOnInProgressHint": "Tapşırığı To Do sütunundan In Progress sütununa əl ilə köçürəndə issue yaradılır.",
 			"toast": {
 				"verifyError": "GitHub quraşdırmasını yoxlamaq alınmadı",
 				"installAppFirst": "Əvvəlcə bu repozitoriyada GitHub tətbiqini quraşdırın",

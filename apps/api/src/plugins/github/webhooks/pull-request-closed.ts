@@ -89,7 +89,10 @@ export async function handlePullRequestClosed(payload: PRClosedPayload) {
           }),
         );
 
-        if (pull_request.merged) {
+        if (
+          pull_request.merged &&
+          !(config.createIssueOnInProgress && task.status === "to-do")
+        ) {
           const allTaskPRs = await database.query.externalLinkTable.findMany({
             where: and(
               eq(externalLinkTable.taskId, task.id),

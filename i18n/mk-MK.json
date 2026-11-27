@@ -2,6 +2,8 @@
 	"common": {
 		"appName": "Kaneo",
 		"actions": {
+			"refreshData": "Освежи ги податоците",
+			"refreshDataError": "Податоците не можеа да се освежат.",
 			"cancel": "Откажи",
 			"close": "Затвори",
 			"clearAll": "Исчисти се",
@@ -1010,6 +1012,8 @@
 			"reorderError": "Неуспешна промена на редоследот на колоните"
 		},
 		"githubIntegration": {
+			"createIssueOnInProgressTitle": "Креирај issues кога почнува работата",
+			"createIssueOnInProgressHint": "Креира GitHub issue кога задачата рачно се преместува од To Do во In Progress.",
 			"toast": {
 				"verifyError": "Неуспешна верификација на GitHub инсталацијата",
 				"installAppFirst": "Инсталирај ја GitHub апликацијата на овој репозиториум прво",

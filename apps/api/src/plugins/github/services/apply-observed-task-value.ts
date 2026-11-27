@@ -2,6 +2,7 @@ import type { IntegrationDatabase } from "./integration-task-scope";
 import type { IssueField } from "../utils/deferred-issue-edit";
 import { publishEvent } from "../../../events";
 import { taskTable } from "../../../database/schema";
+import type { GitHubConfig } from "../config";
 import { resolveTargetStatus as resolveGiteaStatus } from "../../gitea/utils/resolve-column";
 import { resolveTargetStatus as resolveGithubStatus } from "../utils/resolve-column";
 import {
@@ -61,7 +62,7 @@ export async function applyObservedTaskValue(
         tx,
         afterCommit,
         link,
-        integration,
+        { ...integration, config: expectedBinding?.config },
         field,
         value,
       );
@@ -102,7 +103,7 @@ export async function writeInboundTaskField(
   tx: IntegrationDatabase,
   afterCommit: (effect: () => Promise<void>) => void,
   link: { taskId: string },
-  integration: { projectId: string; type: string },
+  integration: { projectId: string; type: string; config?: string },
   field: IssueField,
   value: string,
 ) {
@@ -112,7 +113,16 @@ export async function writeInboundTaskField(
       where: linkedTaskScope(link.taskId, integration.projectId),
       columns: { status: true },
     });
-    if (!task || isStateSyncPaused(task.status)) return;
+    if (
+      !task ||
+      isStateSyncPaused(task.status) ||
+      (task.status === "to-do" &&
+        integration.type === "github" &&
+        integration.config &&
+        (JSON.parse(integration.config) as GitHubConfig)
+          .createIssueOnInProgress)
+    )
+      return;
     const resolveStatus =
       integration.type === "gitea" ? resolveGiteaStatus : resolveGithubStatus;
     const status = await resolveStatus(

@@ -7,19 +7,21 @@ import { isIssueInitializationPending } from "./initialize-task-issue";
 import { withSyncLease } from "./lease";
 
 export async function withTaskSyncCreation(
-  event: TaskCreatedEvent,
+  event: Pick<TaskCreatedEvent, "taskId">,
   context: PluginContext,
   create: (current: TaskCreatedEvent) => Promise<void>,
+  options: { existingIssueOnly?: boolean; skipStatus?: string } = {},
 ) {
   await withSyncLease(
     `sync-create:${context.integrationId}:${event.taskId}`,
-    () => createWithLease(event, context, create),
+    () => createWithLease(event, context, create, options),
   );
 }
 async function createWithLease(
-  event: TaskCreatedEvent,
+  event: Pick<TaskCreatedEvent, "taskId">,
   context: PluginContext,
   create: (current: TaskCreatedEvent) => Promise<void>,
+  options: { existingIssueOnly?: boolean; skipStatus?: string },
 ) {
   if (
     !(await canSyncTask(
@@ -38,13 +40,15 @@ async function createWithLease(
     ),
   });
   if (link && !isIssueInitializationPending(link)) return;
+  if (!link && options.existingIssueOnly) return;
   const task = await db.query.taskTable.findFirst({
     where: and(
       eq(taskTable.id, event.taskId),
       eq(taskTable.projectId, context.projectId),
     ),
   });
-  if (!task || task.number === null) return;
+  if (!task || task.number === null || task.status === options.skipStatus)
+    return;
   await create({
     taskId: task.id,
     projectId: task.projectId,

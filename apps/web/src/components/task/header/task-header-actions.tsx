@@ -1,6 +1,7 @@
 import type { AlertDialog as AlertDialogPrimitive } from "@base-ui/react/alert-dialog";
 import { GitBranch, Link2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { RefreshDataButton } from "@/components/shared/refresh-data-button";
 import { HeaderIconButton } from "./header-icon-button";
 import { TaskMoreMenu } from "./task-more-menu";
 import { useTaskCopyActions } from "./use-task-copy-actions";
@@ -23,6 +24,17 @@ export function TaskHeaderActions({
 
   return (
     <div className="flex items-center gap-1">
+      <RefreshDataButton
+        queryKeys={[
+          ["task", taskId],
+          ["task-relations", taskId],
+          ["activities", taskId],
+          ["external-links", taskId],
+          ["labels", taskId],
+          ["time-entries", taskId],
+          ["custom-field-values", taskId],
+        ]}
+      />
       <HeaderIconButton
         label={t("tasks:properties.copyTaskLink")}
         shortcutId="copyTaskUrl"

@@ -16,6 +16,12 @@
 					"type": "object",
 					"additionalProperties": false,
 					"properties": {
+						"refreshData": {
+							"type": "string"
+						},
+						"refreshDataError": {
+							"type": "string"
+						},
 						"cancel": {
 							"type": "string"
 						},
@@ -48,6 +54,8 @@
 						}
 					},
 					"required": [
+						"refreshData",
+						"refreshDataError",
 						"cancel",
 						"close",
 						"clearAll",
@@ -7299,6 +7307,12 @@
 					"type": "object",
 					"additionalProperties": false,
 					"properties": {
+						"createIssueOnInProgressTitle": {
+							"type": "string"
+						},
+						"createIssueOnInProgressHint": {
+							"type": "string"
+						},
 						"validation": {
 							"type": "object",
 							"additionalProperties": false,
@@ -7520,6 +7534,8 @@
 						}
 					},
 					"required": [
+						"createIssueOnInProgressTitle",
+						"createIssueOnInProgressHint",
 						"validation",
 						"toast",
 						"connectionStatus",

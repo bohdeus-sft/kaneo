@@ -277,6 +277,33 @@ describe("GitHub repository step", () => {
 });
 
 describe("connected GitHub repository", () => {
+  it.each([false, true])(
+    "toggles creation on manual start from %s",
+    async (enabled) => {
+      m.appInfo.mockResolvedValue(linkedAccount);
+      m.update.mockResolvedValue({});
+      m.integration.current = {
+        repositoryOwner: "owner",
+        repositoryName: "repo",
+        isActive: true,
+        requiresVerification: false,
+        createIssueOnInProgress: enabled,
+      };
+      show();
+      fireEvent.click(
+        await screen.findByRole("switch", {
+          name: "settings:githubIntegration.createIssueOnInProgressTitle",
+        }),
+      );
+      await waitFor(() =>
+        expect(m.update).toHaveBeenCalledWith({
+          projectId: "project",
+          json: { createIssueOnInProgress: !enabled },
+        }),
+      );
+    },
+  );
+
   it.each([null, "existing-model"])(
     "saves the model or turns off AI review for the linked repository",
     async (savedModel) => {

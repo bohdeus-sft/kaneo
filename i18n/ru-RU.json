@@ -2,6 +2,8 @@
 	"common": {
 		"appName": "Kaneo",
 		"actions": {
+			"refreshData": "Обновить данные",
+			"refreshDataError": "Не удалось обновить данные.",
 			"cancel": "Отмена",
 			"close": "Закрыть",
 			"clearAll": "Очистить все",
@@ -1026,6 +1028,8 @@
 			"reorderError": "Не удалось изменить порядок колонок"
 		},
 		"githubIntegration": {
+			"createIssueOnInProgressTitle": "Создавать задачи в GitHub при начале работы",
+			"createIssueOnInProgressHint": "Создаёт GitHub Issue при ручном переносе задачи из To Do в In Progress.",
 			"toast": {
 				"verifyError": "Не удалось проверить установку GitHub",
 				"installAppFirst": "Сначала установите GitHub App на этот репозиторий",

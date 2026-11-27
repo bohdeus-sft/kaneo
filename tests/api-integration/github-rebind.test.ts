@@ -96,17 +96,27 @@ describe("GitHub repository changes preserve link ownership", () => {
       });
     const initial = await app.request(path);
     expect(initial.status).toBe(200);
-    expect(await initial.json()).toMatchObject({ aiReviewModel: null });
+    expect(await initial.json()).toMatchObject({
+      aiReviewModel: null,
+      createIssueOnInProgress: false,
+    });
     expect((await patch("  ")).status).toBe(400);
     const enabled = await patch("  provider-model  ");
     expect(enabled.status).toBe(200);
     expect(await enabled.json()).toMatchObject({
       aiReviewModel: "provider-model",
     });
+    const startOnMove = await app.request(path, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ createIssueOnInProgress: true }),
+    });
+    expect(startOnMove.status).toBe(200);
     await connect();
     expect(await (await app.request(path)).json()).toMatchObject({
       aiReviewModel: "provider-model",
       commentTaskLinkOnGitHubIssue: false,
+      createIssueOnInProgress: true,
     });
     const disabled = await patch(null);
     expect(disabled.status).toBe(200);

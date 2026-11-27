@@ -15,6 +15,7 @@ import {
 import { useGoToProjectView } from "@/components/project/views/use-go-to-project-view";
 import { useProjectViewShortcuts } from "@/components/project/views/use-project-view-shortcuts";
 import CreateProjectModal from "@/components/shared/modals/create-project-modal";
+import { RefreshDataButton } from "@/components/shared/refresh-data-button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import {
   Tooltip,
@@ -140,6 +141,23 @@ export default function ProjectLayout({
               onAddProject={() => setIsCreateProjectModalOpen(true)}
             />
           </div>
+          {!unavailableReason && (
+            <div className="ml-auto">
+              <RefreshDataButton
+                queryKeys={[
+                  ["projects", workspaceId, projectId],
+                  ["tasks", projectId],
+                  ["columns", projectId],
+                  ["task-relations", "project", projectId],
+                  ["custom-fields", projectId],
+                  ["custom-field-values", projectId],
+                  ["custom-field-filter-values", projectId],
+                  ["active-workspace-users", workspaceId],
+                  ["labels", workspaceId],
+                ]}
+              />
+            </div>
+          )}
         </div>
       </Layout.Header>
 

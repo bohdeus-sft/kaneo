@@ -8,6 +8,7 @@ import { syncTaskFieldLabels } from "../../sync/sync-task-field-labels";
 import { eq } from "drizzle-orm";
 import db from "../../../database";
 import { projectTable } from "../../../database/schema";
+import { publishEvent } from "../../../events";
 import type { PluginContext, TaskCreatedEvent } from "../../types";
 import { type GitHubConfig, hasVerifiedGitHubBinding } from "../config";
 import {
@@ -87,6 +88,12 @@ async function createTaskIssue(
         },
       });
       issueNumber = createdIssue.data.number;
+      if (config.createIssueOnInProgress) {
+        await publishEvent("task.updated", {
+          projectId: event.projectId,
+          taskId: event.taskId,
+        });
+      }
     }
     if (!createdLink) return;
 
@@ -198,7 +205,22 @@ export async function handleTaskCreated(
   event: TaskCreatedEvent,
   context: PluginContext,
 ): Promise<void> {
-  await withTaskSyncCreation(event, context, (current) =>
-    createTaskIssue(current, context),
+  await syncGitHubTaskIssue(event, context, false);
+}
+
+export async function syncGitHubTaskIssue(
+  event: Pick<TaskCreatedEvent, "taskId">,
+  context: PluginContext,
+  startedManually: boolean,
+): Promise<void> {
+  const deferred = (context.config as GitHubConfig).createIssueOnInProgress;
+  await withTaskSyncCreation(
+    event,
+    context,
+    (current) => createTaskIssue(current, context),
+    {
+      existingIssueOnly: deferred && !startedManually,
+      skipStatus: deferred ? "to-do" : undefined,
+    },
   );
 }

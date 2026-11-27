@@ -2,6 +2,8 @@
 	"common": {
 		"appName": "Kaneo",
 		"actions": {
+			"refreshData": "Muat ulang data",
+			"refreshDataError": "Data tidak dapat dimuat ulang.",
 			"cancel": "Batal",
 			"close": "Tutup",
 			"clearAll": "Hapus semua",
@@ -1002,6 +1004,8 @@
 			"reorderError": "Gagal mengubah urutan kolom"
 		},
 		"githubIntegration": {
+			"createIssueOnInProgressTitle": "Buat issue saat pekerjaan dimulai",
+			"createIssueOnInProgressHint": "Buat issue GitHub saat tugas dipindahkan secara manual dari To Do ke In Progress.",
 			"toast": {
 				"verifyError": "Gagal memverifikasi pemasangan GitHub",
 				"installAppFirst": "Pasang GitHub App pada repositori ini terlebih dahulu",

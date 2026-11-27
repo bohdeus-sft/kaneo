@@ -2,6 +2,8 @@
 	"common": {
 		"appName": "Kaneo",
 		"actions": {
+			"refreshData": "Odśwież dane",
+			"refreshDataError": "Nie udało się odświeżyć danych.",
 			"cancel": "Anuluj",
 			"close": "Zamknij",
 			"clearAll": "Wyczyść wszystko",
@@ -1459,6 +1461,8 @@
 			"webhookEvents": "Włącz zdarzenia push, pull request, zgłoszeń, komentarzy do zgłoszeń i create."
 		},
 		"githubIntegration": {
+			"createIssueOnInProgressTitle": "Twórz zgłoszenia po rozpoczęciu pracy",
+			"createIssueOnInProgressHint": "Tworzy zgłoszenie w GitHubie po ręcznym przeniesieniu zadania z To Do do In Progress.",
 			"commentTaskLinkHint": "Aby osoby na GitHubie mogły przejść do zadania.",
 			"commentTaskLinkTitle": "Dodawaj komentarz z linkiem Kaneo do nowych zgłoszeń",
 			"importDisabledHint": "Połącz ponownie repozytorium, aby włączyć importowanie.",

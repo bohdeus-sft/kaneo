@@ -354,6 +354,9 @@ const githubIntegration = apiRouter<BaseVariables & { workspaceId: string }>()
     if (body.aiReviewModel !== undefined) {
       config.aiReviewModel = body.aiReviewModel;
     }
+    if (body.createIssueOnInProgress !== undefined) {
+      config.createIssueOnInProgress = body.createIssueOnInProgress;
+    }
 
     const validation = await validateGitHubConfig(config);
     if (!validation.valid) {

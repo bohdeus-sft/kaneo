@@ -3106,6 +3106,10 @@
             "type": "boolean",
             "description": "When on, Kaneo comments a link back to the task on the linked GitHub issue."
           },
+          "createIssueOnInProgress": {
+            "type": "boolean",
+            "description": "Create GitHub issues on a manual move from To Do to In Progress."
+          },
           "aiReviewModel": {
             "type": [
               "string",
@@ -3203,6 +3207,10 @@
           "commentTaskLinkOnGitHubIssue": {
             "type": "boolean",
             "description": "When on, Kaneo comments a link back to the task on the linked GitHub issue."
+          },
+          "createIssueOnInProgress": {
+            "type": "boolean",
+            "description": "Create GitHub issues on a manual move from To Do to In Progress."
           },
           "aiReviewModel": {
             "type": [
@@ -19205,6 +19213,9 @@
                     "type": "boolean"
                   },
                   "commentTaskLinkOnGitHubIssue": {
+                    "type": "boolean"
+                  },
+                  "createIssueOnInProgress": {
                     "type": "boolean"
                   },
                   "aiReviewModel": {

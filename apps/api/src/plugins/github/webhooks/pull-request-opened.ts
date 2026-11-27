@@ -80,7 +80,11 @@ export async function handlePullRequestOpened(payload: PROpenedPayload) {
         pullRequest: pull_request,
         database,
       });
-      if (currentTask?.id !== task.id) return;
+      if (
+        currentTask?.id !== task.id ||
+        (config.createIssueOnInProgress && currentTask.status === "to-do")
+      )
+        return;
       if (
         await findExternalLink(
           integration.id,

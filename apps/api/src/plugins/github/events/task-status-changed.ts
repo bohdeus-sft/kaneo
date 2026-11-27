@@ -1,5 +1,6 @@
 import { syncTaskFieldLabels } from "../../sync/sync-task-field-labels";
 import { canSyncTask } from "../../sync/eligibility";
+import { isIssueInitializationPending } from "../../sync/initialize-task-issue";
 import { syncLatestTaskValue } from "../services/sync-latest-task-value";
 import { resolveIssueStateChange } from "../../sync/issue-state-change";
 import type { PluginContext, TaskStatusChangedEvent } from "../../types";
@@ -10,6 +11,7 @@ import {
   getVerifiedInstallationOctokit,
 } from "../utils/github-app";
 import { addLabelsToIssue, removeLabel } from "../utils/labels";
+import { syncGitHubTaskIssue } from "./task-created";
 
 export async function handleTaskStatusChanged(
   event: TaskStatusChangedEvent,
@@ -42,9 +44,18 @@ export async function handleTaskStatusChanged(
         link.resourceType === "issue",
     );
 
-    if (!issueLink) {
+    if (
+      config.createIssueOnInProgress &&
+      event.userId &&
+      !event.sourceIntegrationId &&
+      event.oldStatus === "to-do" &&
+      event.newStatus === "in-progress" &&
+      (!issueLink || isIssueInitializationPending(issueLink))
+    ) {
+      await syncGitHubTaskIssue(event, context, true);
       return;
     }
+    if (!issueLink) return;
     const octokit = await getVerifiedInstallationOctokit(config);
     const issueNumber = Number.parseInt(issueLink.externalId, 10);
 

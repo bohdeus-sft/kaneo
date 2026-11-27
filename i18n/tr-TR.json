@@ -2,6 +2,8 @@
 	"common": {
 		"appName": "Kaneo",
 		"actions": {
+			"refreshData": "Verileri yenile",
+			"refreshDataError": "Veriler yenilenemedi.",
 			"cancel": "İptal",
 			"close": "Kapat",
 			"clearAll": "Tümünü temizle",
@@ -1010,6 +1012,8 @@
 			"reorderError": "Sütunlar yeniden sıralanamadı"
 		},
 		"githubIntegration": {
+			"createIssueOnInProgressTitle": "İş başladığında issue oluştur",
+			"createIssueOnInProgressHint": "Bir görevi To Do sütunundan In Progress sütununa elle taşıdığında GitHub issue oluşturur.",
 			"toast": {
 				"verifyError": "GitHub kurulumu doğrulanamadı",
 				"installAppFirst": "Lütfen önce GitHub Uygulamasını bu depoya kurun",

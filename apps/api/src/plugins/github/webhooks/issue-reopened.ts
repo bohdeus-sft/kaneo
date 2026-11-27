@@ -56,8 +56,8 @@ export async function handleIssueReopened(payload: IssueReopenedPayload) {
       continue;
     }
 
+    const config = JSON.parse(integration.config) as GitHubConfig;
     const readCurrent = async () => {
-      const config = JSON.parse(integration.config) as GitHubConfig;
       const octokit = await getVerifiedInstallationOctokit(config);
       return (
         await octokit.rest.issues.get({
@@ -85,7 +85,11 @@ export async function handleIssueReopened(payload: IssueReopenedPayload) {
               return;
             }
 
-            if (isStateSyncPaused(task.status)) return;
+            if (
+              isStateSyncPaused(task.status) ||
+              (config.createIssueOnInProgress && task.status === "to-do")
+            )
+              return;
 
             const existingMetadata = parseLinkMetadata<
               Record<string, unknown> & { lastSync?: { state?: SyncStamp } }

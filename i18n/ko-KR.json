@@ -2,6 +2,8 @@
 	"common": {
 		"appName": "Kaneo",
 		"actions": {
+			"refreshData": "데이터 새로고침",
+			"refreshDataError": "데이터를 새로고침하지 못했습니다.",
 			"cancel": "취소",
 			"close": "닫기",
 			"clearAll": "모두 지우기",
@@ -1002,6 +1004,8 @@
 			"reorderError": "컬럼 순서를 변경하지 못했습니다"
 		},
 		"githubIntegration": {
+			"createIssueOnInProgressTitle": "작업을 시작할 때 이슈 만들기",
+			"createIssueOnInProgressHint": "작업을 To Do에서 In Progress로 직접 옮기면 GitHub 이슈를 만듭니다.",
 			"toast": {
 				"verifyError": "GitHub 설치 확인에 실패했습니다",
 				"installAppFirst": "먼저 이 저장소에 GitHub 앱을 설치하세요",

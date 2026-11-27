@@ -2,6 +2,8 @@
 	"common": {
 		"appName": "Kaneo",
 		"actions": {
+			"refreshData": "刷新数据",
+			"refreshDataError": "无法刷新数据。",
 			"cancel": "取消",
 			"close": "关闭",
 			"clearAll": "全部清除",
@@ -1246,6 +1248,8 @@
 			"reorderError": "重新排序列失败"
 		},
 		"githubIntegration": {
+			"createIssueOnInProgressTitle": "开始处理时创建 Issue",
+			"createIssueOnInProgressHint": "手动将任务从 To Do 移到 In Progress 时创建 GitHub Issue。",
 			"toast": {
 				"verifyError": "验证 GitHub 安装失败",
 				"installAppFirst": "请先在此仓库上安装 GitHub App",
